@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+download_image() {
+  page_number=$1
+  html=$(wget -q -S -O - "https://stallman.org/photos/rms-working/pages/$page_number.html" 2>&1)
+  image_name=$(echo "$html" | grep -o '<img src="[^"]*"' | sed 's/<img src="\(.*\)"/\1/')
+  image=$(echo "$image_name" | grep -o 'mid_[^/]*$' | sed 's/^mid_//' | tr -d '\n')
+  wget https://stallman.org/photos/rms-working/$image
+}
+
+export -f download_image
+parallel download_image ::: {1..149}
